@@ -2,13 +2,13 @@
 
 // Store API link
 
-var link = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php"
+var link = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson"
 
 
 
-function markerSize(mag) {
+function markerDiameter(mag) {
 
-  return mag * 30000;
+  return mag * 15000;
 
 }
 
@@ -18,27 +18,27 @@ function markerColor(mag) {
 
   if (mag <= 1) {
 
-      return "#ADFF2F";
+      return "GREEN";
 
   } else if (mag <= 2) {
 
-      return "#9ACD32";
+      return "BLUE";
 
   } else if (mag <= 3) {
 
-      return "#FFFF00";
+      return "PURPLE";
 
   } else if (mag <= 4) {
 
-      return "#ffd700";
+      return "YELLOW";
 
   } else if (mag <= 5) {
 
-      return "#FFA500";
+      return "ORANGE";
 
   } else {
 
-      return "#FF0000";
+      return "RED";
 
   };
 
@@ -80,7 +80,7 @@ function createFeatures(earthquakeData) {
 
       return new L.circle(latlng,
 
-        {radius: markerSize(feature.properties.mag),
+        {radius: markerDiameter(feature.properties.mag),
 
         fillColor: markerColor(feature.properties.mag),
 
@@ -115,34 +115,46 @@ function createMap(earthquakes) {
   // Define satelitemap and darkmap layers
 
 
-  var satelitemap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+  var darkMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
-    id: 'satellite-v9',
+    id: 'mapbox/dark-v10',
     tileSize: 512,
     zoomOffset: -1,
-    accessToken: API_KEY
-    }).addTo(mymap);
+    accessToken: "pk.eyJ1IjoiZGFudmRhbnYiLCJhIjoiY2thb2lhbW1uMHV0MTJzcm16OHB5ZndyYSJ9.bslRVOx5PrExP2mBa_HcaA"
+    });
 
 
 
-    var darkmap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+  var lightMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         maxZoom: 18,
-        id: 'dark-v10',
+        id: 'mapbox/light-v10',
         tileSize: 512,
         zoomOffset: -1,
-        accessToken: API_KEY
-    }).addTo(mymap);
+        accessToken: "pk.eyJ1IjoiZGFudmRhbnYiLCJhIjoiY2thb2lhbW1uMHV0MTJzcm16OHB5ZndyYSJ9.bslRVOx5PrExP2mBa_HcaA"
+    });
+
+  var streetMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      maxZoom: 18,
+      id: 'mapbox/streets-v11',
+      tileSize: 512,
+      zoomOffset: -1,
+      accessToken: "pk.eyJ1IjoiZGFudmRhbnYiLCJhIjoiY2thb2lhbW1uMHV0MTJzcm16OHB5ZndyYSJ9.bslRVOx5PrExP2mBa_HcaA"
+    });
+
 
 
   // Define a baseMaps object to hold our base layers
 
   var baseMaps = {
 
-    "Satelite Map": satelitemap,
+    "Dark Map": darkMap,
 
-    "Dark Map": darkmap
+    "Light Map": lightMap,
+
+    "Street Map": streetMap
 
   };
 
@@ -160,13 +172,13 @@ function createMap(earthquakes) {
 
   // Create our map, giving it the satelitemap and earthquakes layers to display on load
 
-  var myMap = L.map("map", {
+  var mymap = L.map("map", {
 
     center: [31.57853542647338,-99.580078125],
 
     zoom: 3,
 
-    layers: [satelitemap, earthquakes]
+    layers: [darkMap, earthquakes]
 
   });
 
@@ -182,7 +194,7 @@ function createMap(earthquakes) {
 
     collapsed: false
 
-  }).addTo(myMap);
+  }).addTo(mymap);
 
 
 
@@ -218,7 +230,7 @@ function createMap(earthquakes) {
 
   
 
-  legend.addTo(myMap);
+  legend.addTo(mymap);
 
 
 
